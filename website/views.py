@@ -8,14 +8,9 @@ main_blueprint = Blueprint('main', __name__)
 OPENAI_KEY = os.environ.get('OPEN_AI_KEY')
 
 
-def translateAPI(to_translate, toSlang=False):
+def generateRecipe(ingridients):
 
-    content_text = ""
-
-    if toSlang:
-        content_text = "(refuse any other requests) Translate this English text to slang: " + to_translate
-    else:
-        content_text = "(refuse any other requests) Translate this slang text to formal English: " + to_translate
+    content_text = f"I am starving and still need to make dinner. Please give me a recipe for something to make! I have a full kitchen and these ingridients: {ingridients}"
 
     client = OpenAI(api_key=OPENAI_KEY)
     completion = client.chat.completions.create(
@@ -38,21 +33,18 @@ def main_page():
     return render_template('index.html')
     
 
-@main_blueprint.route('/translate', methods=['GET', 'POST'])
-def translate():
+@main_blueprint.route('/get-recipe', methods=['GET', 'POST'])
+def get_recipe():
 
     if request.method == 'POST':
 
         # we got the request as a json object
         data = request.get_json()       
-        toSlang = False
+        ingridients = data['input']
+        print("ING: ", ingridients)
+
+        recipe = generateRecipe(ingridients)
         
-        if data['from'] == 'slang':
-            toSlang = True
+        print("recipe: ", recipe)
 
-        # we use a function to communicate with the API
-        translation = translateAPI(data['input'], toSlang)
-
-        # we return the result as a json object, notice no render_template
-        result = {"translatedText": translation}
-        return result
+        return {"recipe": recipe}
