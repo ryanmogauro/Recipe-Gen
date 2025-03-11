@@ -22,7 +22,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run Pylint
         run: |
-          pylint my_project --exit-zero  # Change 'my_project' to your folder
+          pylint website/ --exit-zero
       - name: Run Tests
         run: |
-          pytest  # Adjust this if your tests are in a specific folder
+          pytest
