@@ -1,39 +1,46 @@
+# tests/conftest.py
 import pytest
-from website import create_app, db
-from flask import session
-import os
+from unittest.mock import MagicMock
+from app import create_app
 
-@pytest.fixture(scope='module')
-def test_client():
-    # Set the Testing configuration prior to creating the Flask application
-    os.environ['CONFIG_TYPE'] = 'config.TestingConfig'
-    flask_app = create_app()
+@pytest.fixture
+def client():
+    app = create_app()
+    with app.test_client() as c:
+        yield c
 
-    # Create a test client using the Flask application configured for testing
-    with flask_app.test_client() as test_client:
-        yield test_client # this is where the testing happens!
+@pytest.fixture
+def mock_openai(mocker):
+    """
+    Mocks website.views.OpenAI to handle three scenarios:
+    1) "macaroni" + "cheese" => "Here’s your mac & cheese recipe!"
+    2) "anything" => content=None => "Sorry, I don’t understand that."
+    3) everything else => "Some other generic recipe."
+    """
+    mock_class = mocker.patch("website.views.OpenAI")
 
+    def fake_create(model, messages):
+        user_content = messages[0].get("content", "").lower()
 
-def test_get_articles():
+        if "macaroni" in user_content and "cheese" in user_content:
+            content = "Here’s your mac & cheese recipe!"
+        elif "anything" in user_content:
+            # Force content=None => triggers "Sorry, I don't understand that."
+            content = None
+        else:
+            content = "Some other generic recipe."
 
-    articles = [{'source': {'id': None, 'name': 'Yahoo Entertainment'},
-                'author': 'Steve Dent',
-                'title': 'China’s DeepSeek AI assistant becomes top free iPhone app as US tech stocks take a hit',
-                'description': "Chinese AI assistant DeepSeek has become the top rated free app on Apple's App Store in the US and elsewhere, beating out ChatGPT and other rivals. It's powered by the open-source DeepSeek V3 model, which reportedly requires far less computing power than comp…",
-                'url': 'https://consent.yahoo.com/v2/collectConsent?sessionId=1_cc-session_77718621-45d9-4bdb-8512-cebc2edfb974',
-                'urlToImage': None,
-                'publishedAt': '2025-01-27T13:44:45Z',
-                'content': "If you click 'Accept all', we and our partners, including 239 who are part of the IAB Transparency &amp; Consent Framework, will also store and/or access information on a device (in other words, use … [+703 chars]"}]
+        fake_completion = MagicMock()
+        fake_completion.choices = [
+            MagicMock(message=MagicMock(content=content))
+        ]
+        return fake_completion
 
-    return articles
+    mock_chat = MagicMock()
+    mock_chat.completions.create.side_effect = fake_create
 
-@pytest.fixture(scope='function')
-def news_api_mock_client(mocker):
-    os.environ['CONFIG_TYPE'] = 'config.TestingConfig'
-    flask_app = create_app()
+    mock_instance = MagicMock()
+    mock_instance.chat = mock_chat
 
-    # need to pip install pytest-mock for mocker to work
-    mocker.patch('website.views.get_articles', test_get_articles) 
-
-    with flask_app.test_client() as test_client:
-        yield test_client
+    mock_class.return_value = mock_instance
+    return mock_class

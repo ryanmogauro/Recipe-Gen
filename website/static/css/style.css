@@ -1,0 +1,134 @@
+/* Root theme variables (dark & neon blues) */
+:root {
+    --primary-dark: #121212;
+    --secondary-dark: #1f1f1f;
+    --tertiary-dark: #2d2d2d;
+    --primary-blue: #00a2ff;
+    --secondary-blue: #0077ff;
+    --glow-blue: #00c3ff;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+  }
+  
+  /* Basic resets */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  body {
+    background-color: var(--primary-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Main container */
+  .container {
+    width: 90%;
+    max-width: 600px;
+    background-color: var(--secondary-dark);
+    border: 1px solid var(--tertiary-dark);
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 0 20px rgba(0, 162, 255, 0.1);
+  }
+  
+  /* Title styling */
+  .title {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary-blue);
+  }
+  
+  /* Ingredient container & input */
+  .ingredient-container {
+    margin-bottom: 1rem;
+  }
+  
+  .ingredient-input {
+    margin-bottom: 0.75rem;
+  }
+  
+  .ingredient-input input {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--tertiary-dark);
+    border: 1px solid #444;
+    border-radius: 5px;
+    color: var(--text-primary);
+    font-size: 1rem;
+  }
+  
+  /* Button row */
+  .button-row {
+    text-align: center;
+    margin: 1rem 0;
+  }
+  
+  /* Add (+) button */
+  .btn-add {
+    background-color: transparent;
+    border: 2px solid var(--primary-blue);
+    color: var(--primary-blue);
+    font-size: 1.2rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-add:hover {
+    background-color: var(--primary-blue);
+    color: var(--primary-dark);
+  }
+  
+  /* "Find a Recipe" button */
+  .btn-generate {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    background: linear-gradient(to right, var(--primary-blue), var(--secondary-blue));
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .btn-generate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 162, 255, 0.4);
+  }
+  .btn-generate:active {
+    transform: translateY(0);
+  }
+  
+  /* Recipe result container */
+  .result-container {
+    margin-top: 1rem;
+    background-color: var(--tertiary-dark);
+    border-radius: 5px;
+    padding: 1rem;
+    min-height: 50px;
+  }
+  
+  .result-title {
+    color: var(--primary-blue);
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Loading text style */
+  .loading-text {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+  

@@ -1,82 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Recipe Ingredient Input</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Removed Bootstrap link. Instead, use our custom stylesheet: -->
+  <link rel="stylesheet" href="static/css/style.css" />
 </head>
-<body class="bg-light">
-  <div class="container mt-5">
-    <h2 class="mb-4 text-center">What ingredients do you have?</h2>
+<body>
+  <div class="container">
+    <h2 class="title">What ingredients do you have?</h2>
     
-    <!-- Ingredient inputs-->
-    <div id="ingredient-container">
-      <div class="mb-2">
-        <input type="text" class="form-control" placeholder="Enter an ingredient">
+    <!-- Ingredient inputs -->
+    <div id="ingredient-container" class="ingredient-container">
+      <!-- First input -->
+      <div class="ingredient-input">
+        <input type="text" placeholder="Enter an ingredient" />
       </div>
     </div>
-    
+
     <!-- + button -->
-    <div class="text-center">
-      <button id="add-ingredient-btn" class="btn btn-outline-primary">+</button>
+    <div class="button-row">
+      <button id="add-ingredient-btn" class="btn-add">+</button>
     </div>
     
     <!-- submit button -->
-    <div class="mt-4 text-center">
-      <button id="get-recipe-btn" class="btn btn-primary">Find a Recipe</button>
+    <div class="button-row">
+      <button id="get-recipe-btn" class="btn-generate">Find a Recipe</button>
     </div>
 
     <!-- Recipe result -->
-    <div id="recipe-result" style="margin-top: 20px;"></div>
+    <div id="recipe-result" class="result-container"></div>
   </div>
-
-  
 
   <script>
     function addIngredient() {
-        const container = document.getElementById('ingredient-container');
-        const newDiv = document.createElement('div');
-        newDiv.classList.add('mb-2');
+      const container = document.getElementById('ingredient-container');
+      const newDiv = document.createElement('div');
+      newDiv.classList.add('ingredient-input');
 
-        const newInput = document.createElement('input');
-        newInput.type = 'text';
-        newInput.classList.add('form-control');
-        newInput.placeholder = 'Enter an ingredient';
+      const newInput = document.createElement('input');
+      newInput.type = 'text';
+      newInput.placeholder = 'Enter an ingredient';
 
-        newDiv.appendChild(newInput);
-        container.appendChild(newDiv);
+      newDiv.appendChild(newInput);
+      container.appendChild(newDiv);
     }
 
     document.getElementById('add-ingredient-btn').addEventListener('click', addIngredient);
 
     async function generateRecipe() {
-        const ingredientInputs = document.querySelectorAll('#ingredient-container input');
-        const ingredients = [];
-        ingredientInputs.forEach(input => {
-            const value = input.value.trim();
-            if (value !== '') {
-                ingredients.push(value);
-            }
-        });
+      const ingredientInputs = document.querySelectorAll('#ingredient-container input');
+      const ingredients = [];
+      ingredientInputs.forEach(input => {
+        const value = input.value.trim();
+        if (value !== '') {
+          ingredients.push(value);
+        }
+      });
 
-        let resultDiv = document.getElementById('recipe-result');
+      const resultDiv = document.getElementById('recipe-result');
+      resultDiv.innerHTML = "<p class='loading-text'>Loading...</p>";
 
-        resultDiv.innerHTML = "<p>Loading...</p>";
+      const response = await fetch("/get-recipe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: ingredients })
+      });
 
-        let response = await fetch("/get-recipe", {
-            method: "POST",
-            body: JSON.stringify({input: ingredients }),
-            headers: { "Content-Type": "application/json" }
-        });
-
-        let data = await response.json();
-
-        resultDiv.innerHTML = `<h3>Recipe:</h3><p>${data.recipe}</p>`;
+      const data = await response.json();
+      resultDiv.innerHTML = `<h3 class="result-title">Recipe:</h3><p>${data.recipe}</p>`;
     }
 
     document.getElementById('get-recipe-btn').addEventListener('click', generateRecipe);
-</script>
-
+  </script>
 </body>
 </html>
