@@ -1,0 +1,28 @@
+name: Run Tests and Lint
+
+on: [push, pull_request]
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint pytest  # Add any other dependencies here
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Run Pylint
+        run: |
+          pylint my_project --exit-zero  # Change 'my_project' to your folder
+      - name: Run Tests
+        run: |
+          pytest  # Adjust this if your tests are in a specific folder
